@@ -1,11 +1,11 @@
-// TSYL Vision — Site behaviors
+// TSYL Marketing — Site behaviors
 (function() {
   'use strict';
 
   // ---------- Sticky nav shadow ----------
   const nav = document.querySelector('.nav');
   if (nav) {
-    const setScrolled = () => nav.classList.toggle('scrolled', window.scrollY > 12);
+    const setScrolled = () => nav.classList.toggle('scrolled', window.scrollY > 8);
     setScrolled();
     window.addEventListener('scroll', setScrolled, { passive: true });
   }
@@ -19,7 +19,6 @@
       toggle.classList.toggle('open', open);
       document.body.style.overflow = open ? 'hidden' : '';
     });
-    // close on link click
     drawer.querySelectorAll('a').forEach(a => {
       a.addEventListener('click', () => {
         drawer.classList.remove('open');
@@ -38,13 +37,13 @@
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   } else {
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
   }
 
-  // ---------- Stats counter ----------
+  // ---------- Stat counters ----------
   const counters = document.querySelectorAll('[data-count]');
   if (counters.length && 'IntersectionObserver' in window) {
     const obs = new IntersectionObserver((entries) => {
@@ -53,7 +52,7 @@
         const el = entry.target;
         const target = parseInt(el.dataset.count, 10);
         const suffix = el.dataset.suffix || '';
-        const duration = 1600;
+        const duration = 1400;
         const start = performance.now();
         const tick = (now) => {
           const t = Math.min((now - start) / duration, 1);
@@ -88,26 +87,7 @@
     });
   });
 
-  // ---------- Projects page — filter ----------
-  const filterBtns = document.querySelectorAll('[data-filter]');
-  if (filterBtns.length) {
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const f = btn.dataset.filter;
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('[data-cat]').forEach(card => {
-          if (f === 'all' || card.dataset.cat === f) {
-            card.style.display = '';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-    });
-  }
-
-  // ---------- Contact form (preview only — no backend) ----------
+  // ---------- Contact form (preview — no backend) ----------
   const form = document.querySelector('#contact-form');
   if (form) {
     form.addEventListener('submit', (e) => {
