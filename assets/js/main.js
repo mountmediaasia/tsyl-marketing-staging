@@ -1,106 +1,59 @@
-// TSYL Marketing — Site behaviors
-(function() {
+// TSYL Marketing — accessible navigation, client logos and email enquiry.
+(() => {
   'use strict';
-
-  // ---------- Sticky nav shadow ----------
   const nav = document.querySelector('.nav');
-  if (nav) {
-    const setScrolled = () => nav.classList.toggle('scrolled', window.scrollY > 8);
-    setScrolled();
-    window.addEventListener('scroll', setScrolled, { passive: true });
-  }
-
-  // ---------- Mobile drawer ----------
+  const updateNav = () => nav?.classList.toggle('scrolled', window.scrollY > 8);
+  updateNav();
+  window.addEventListener('scroll', updateNav, { passive: true });
   const toggle = document.querySelector('.nav-toggle');
   const drawer = document.querySelector('.nav-drawer');
-  if (toggle && drawer) {
-    toggle.addEventListener('click', () => {
-      const open = drawer.classList.toggle('open');
-      toggle.classList.toggle('open', open);
-      document.body.style.overflow = open ? 'hidden' : '';
-    });
-    drawer.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        drawer.classList.remove('open');
-        toggle.classList.remove('open');
-        document.body.style.overflow = '';
-      });
-    });
-  }
-
-  // ---------- Reveal on scroll ----------
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-  } else {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
-  }
-
-  // ---------- Stat counters ----------
-  const counters = document.querySelectorAll('[data-count]');
-  if (counters.length && 'IntersectionObserver' in window) {
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        const target = parseInt(el.dataset.count, 10);
-        const suffix = el.dataset.suffix || '';
-        const duration = 1400;
-        const start = performance.now();
-        const tick = (now) => {
-          const t = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - t, 3);
-          const value = Math.round(target * eased);
-          el.textContent = formatNum(value) + suffix;
-          if (t < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-        obs.unobserve(el);
-      });
-    }, { threshold: 0.4 });
-    counters.forEach(c => obs.observe(c));
-  }
-
-  function formatNum(n) {
-    if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'K';
-    return n.toString();
-  }
-
-  // ---------- Products page — category jump ----------
-  document.querySelectorAll('[data-jump]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = document.getElementById(btn.dataset.jump);
-      if (target) {
-        const top = target.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top, behavior: 'smooth' });
-        document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-      }
-    });
+  const setMenu = (open) => {
+    drawer.classList.toggle('open', open);
+    drawer.inert = !open;
+    drawer.setAttribute('aria-hidden', String(!open));
+    toggle.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  toggle?.addEventListener('click', () => setMenu(!drawer.classList.contains('open')));
+  drawer?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', event => {
+    if (!drawer?.classList.contains('open')) return;
+    if (event.key === 'Escape') { setMenu(false); toggle.focus(); }
+    if (event.key === 'Tab') {
+      const items = [toggle, ...drawer.querySelectorAll('a')];
+      const first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
   });
-
-  // ---------- Contact form (preview — no backend) ----------
+  window.matchMedia('(min-width: 1021px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
+  const pause = document.querySelector('#logos-toggle');
+  const marquee = document.querySelector('.marquee');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (pause) {
+    const syncMotion = () => { pause.hidden = reducedMotion.matches; };
+    syncMotion(); reducedMotion.addEventListener('change', syncMotion);
+    pause.addEventListener('click', () => {
+      const paused = marquee.classList.toggle('paused');
+      pause.setAttribute('aria-pressed', String(paused));
+      pause.textContent = paused ? 'Resume logos' : 'Pause logos';
+    });
+  }
   const form = document.querySelector('#contact-form');
   if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const btn = form.querySelector('button[type="submit"]');
-      const original = btn.textContent;
-      btn.textContent = 'Sending…';
-      btn.disabled = true;
-      setTimeout(() => {
-        btn.textContent = 'Message sent ✓';
-        form.reset();
-        setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2500);
-      }, 900);
+    const product = new URLSearchParams(location.search).get('product');
+    const productNames = { wds1700: 'WDS 1700 Air Duct Sealant', vision555: 'Contact Adhesive (Vision 555)', vfc919: 'Flexible Connector VFC 919', nbr: 'Nitrile Rubber (NBR)', gasket: 'Vision Fire Retardant Gasket (VG919)', foil: 'Fire Retardant D/S Aluminium Foil', 'open-cell': 'Open Cell Insulation', fireseal: 'Fireseal', 'pe-foam': 'PE Foam', 'fiberglass-rockwool': 'Fiberglass and Rockwool Insulation', ducts: 'Flexible Duct and Semi-Rigid Ducts', metacaulk: 'Metacaulk 1000 & Metacaulk 1200', 'kitchen-sealant': 'Kitchen Sealant', fireproof: 'Fireproof and Safety Materials', construction: 'General Construction and Industrial Supplies' };
+    if (productNames[product]) form.elements.message.value = `I would like to enquire about ${productNames[product]}.\n\nQuantity:\nDelivery location:\nRequired date:`;
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const recipient = data.get('office') === 'tsylmarketingkch@hotmail.com' ? 'tsylmarketingkch@hotmail.com' : 'tsylmarketing@hotmail.com';
+      const subject = `Product enquiry — ${data.get('company')}`;
+      const body = `Company: ${data.get('company')}\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nPhone: ${data.get('phone')}\n\n${data.get('message')}`;
+      location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      document.querySelector('#form-status').textContent = 'Your email draft is ready to open. Send it from your email app to complete the enquiry. If no app opens, email our team directly; your entries are still here.';
     });
   }
 })();

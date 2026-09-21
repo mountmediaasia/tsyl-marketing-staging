@@ -1235,3 +1235,51 @@ p { color: var(--charcoal); }
 @media print {
   .nav, .footer, .cta-banner, .cta-orange { display: none; }
 }
+/* Profile-aligned catalogue and project imagery */
+.nav-logo img { height: 66px; width: 102px; object-fit: contain; }
+.nav-links { gap: clamp(.75rem, 1.6vw, 1.6rem); }
+.nav-link { font-size: .84rem; }
+.nav-drawer .nav-links { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.nav-drawer .nav-link { display: block; }
+.footer-brand img { height: 85px; width: 130px; object-fit: contain; filter: none; background: white; padding: .4rem; border-radius: 3px; }
+.footer a, .oc-contact a { overflow-wrap: anywhere; }
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: white; padding: 1rem; }
+.skip-link:focus { top: 1rem; }
+:focus-visible { outline: 3px solid var(--green-leaf); outline-offset: 5px; }
+section[id], div[id], main { scroll-margin-top: 110px; }
+.trust-heading { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+.trust-heading p { margin-top: .5rem; color: var(--graphite); font-size: .85rem; }
+.marquee-track { gap: 0; animation-duration: 85s; }
+.logo-group { display: flex; align-items: center; flex-shrink: 0; }
+.client-logo { width: 210px; height: 104px; padding: 14px 25px; display: flex; align-items: center; justify-content: center; }
+.client-logo img { width: 160px; height: 76px; object-fit: contain; }
+.marquee:hover .marquee-track, .marquee.paused .marquee-track { animation-play-state: paused; }
+.catalog-image { width: 100%; height: 250px; object-fit: contain; background: #f7f7f7; padding: 1rem; }
+.product-card .pc-media img { object-fit: contain; background: #f7f7f7; padding: .75rem; }
+.cat-section .services-grid { row-gap: 1.5rem; }
+.two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem 1.5rem; }
+.project-card { overflow: hidden; border-bottom: 1px solid var(--line); }
+.project-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--r-md); }
+.project-card > div { padding: 1.25rem 0 1.5rem; }
+.project-card h3 { margin-top: .6rem; }
+.cta-content { display: flex; justify-content: space-between; gap: 2rem; align-items: center; }
+.cta-content p { color: #dce9e1; margin-top: 1.25rem; }
+.detail-image { width: 100%; max-height: 480px; object-fit: contain; }
+.product-detail { align-items: start; }
+.application-steps { list-style: decimal; padding-left: 1.3rem; margin-bottom: 1.5rem; }
+.application-steps li { margin-bottom: .5rem; }
+.product-note { padding: 1rem; border-left: 3px solid var(--orange); background: var(--orange-soft); }
+.specs-wrap { margin-top: 3rem; }
+.specs { width: 100%; border-collapse: collapse; background: white; text-align: left; }
+.specs caption { text-align: left; font-weight: 700; font-size: 1.5rem; margin-bottom: 1rem; }
+.specs th, .specs td { padding: 1rem 1.25rem; border: 1px solid var(--line); vertical-align: top; }
+.specs th { width: 30%; color: var(--green); }
+.contact-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.form-status, .form-help { font-size: .85rem; margin-top: 1rem; }
+.form-status { color: var(--green); }
+.stat-num { font-size: clamp(2rem, 3.5vw, 3.4rem); }
+@media (max-width: 1100px) { .nav-inner { gap: 1rem; } }
+@media (max-width: 880px) { .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cta-content { flex-direction: column; align-items: flex-start; } }
+@media (max-width: 600px) { .project-grid, .two-column { grid-template-columns: 1fr; } .trust-heading { align-items: flex-start; flex-direction: column; } .specs th, .specs td { padding: .75rem; font-size: .86rem; } .specs th { width: 38%; } .nav-logo img { height: 55px; width: 90px; } .hero-media { min-height: 280px; } .client-logo { width: 170px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } .marquee { overflow-x: auto; mask-image: none; } .marquee-track { animation: none; } .logo-group[aria-hidden] { display: none; } .reveal { opacity: 1; transform: none; } }
