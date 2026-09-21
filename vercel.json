@@ -1,0 +1,24 @@
+{
+  "redirects": [
+    {
+      "source": "/projects.html",
+      "destination": "/products.html",
+      "permanent": true
+    },
+    {
+      "source": "/industries.html",
+      "destination": "/products.html",
+      "permanent": true
+    },
+    {
+      "source": "/projects",
+      "destination": "/products.html",
+      "permanent": true
+    },
+    {
+      "source": "/industries",
+      "destination": "/products.html",
+      "permanent": true
+    }
+  ]
+}

@@ -29,17 +29,91 @@
     }
   });
   window.matchMedia('(min-width: 1021px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
-  const pause = document.querySelector('#logos-toggle');
-  const marquee = document.querySelector('.marquee');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (pause) {
-    const syncMotion = () => { pause.hidden = reducedMotion.matches; };
-    syncMotion(); reducedMotion.addEventListener('change', syncMotion);
-    pause.addEventListener('click', () => {
-      const paused = marquee.classList.toggle('paused');
-      pause.setAttribute('aria-pressed', String(paused));
-      pause.textContent = paused ? 'Resume logos' : 'Pause logos';
+  // Category tabs keep product browsing compact; links retain shareable hashes.
+  const tablist = document.querySelector('[role="tablist"]');
+  if (tablist) {
+    const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+    const cards = [...document.querySelectorAll('.catalogue-grid .product-card')];
+    const results = document.querySelector('#product-results');
+    const specifications = document.querySelector('#wds1700');
+    const pagination = document.querySelector('.catalogue-pagination');
+    const previous = document.querySelector('#previous-products');
+    const next = document.querySelector('#next-products');
+    const descriptions = {
+      all: 'Explore our complete range of insulation, accessories and building supplies.',
+      thermal: 'Materials for internal and external HVAC insulation.',
+      accessories: 'Flexible ducting, connectors, gaskets and foil.',
+      sealants: 'Duct sealing, bonding and firestop products.',
+      building: 'Fireproof, safety and general construction supplies.'
+    };
+    let category = 'all';
+    let page = 0;
+    const pageSize = 6;
+    function render() {
+      const matching = cards.filter(card => category === 'all' || card.dataset.category === category);
+      const pageCount = Math.ceil(matching.length / pageSize);
+      page = Math.max(0, Math.min(page, pageCount - 1));
+      const visible = matching.slice(page * pageSize, (page + 1) * pageSize);
+      cards.forEach(card => { card.hidden = !visible.includes(card); });
+      const selected = tabs.find(tab => tab.dataset.category === category);
+      tabs.forEach(tab => {
+        const active = tab === selected;
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      results.setAttribute('aria-labelledby', selected.id);
+      document.querySelector('#category-heading').textContent = selected.textContent;
+      document.querySelector('#category-description').textContent = descriptions[category];
+      document.querySelector('#product-count').textContent = `Showing ${page * pageSize + 1}–${page * pageSize + visible.length} of ${matching.length} products`;
+      pagination.hidden = pageCount <= 1;
+      previous.disabled = page === 0;
+      next.disabled = page === pageCount - 1;
+      document.querySelector('#product-page').textContent = `Page ${page + 1} of ${pageCount}`;
+      specifications.hidden = category !== 'all' && category !== 'sealants';
+      if (specifications.hidden) specifications.open = false;
+    }
+    function select(value, updateUrl = true) {
+      category = Object.hasOwn(descriptions, value) ? value : 'all';
+      page = 0;
+      render();
+      if (updateUrl) history.pushState(null, '', `#${category}`);
+    }
+    function fromHash() {
+      const hash = location.hash.slice(1);
+      if (hash === 'wds1700') {
+        select('sealants', false);
+        specifications.open = true;
+        requestAnimationFrame(() => specifications.scrollIntoView({ block: 'start' }));
+      } else select(hash, false);
+    }
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => select(tab.dataset.category));
+      tab.addEventListener('keydown', event => {
+        let target;
+        if (event.key === 'ArrowRight') target = (index + 1) % tabs.length;
+        if (event.key === 'ArrowLeft') target = (index + tabs.length - 1) % tabs.length;
+        if (event.key === 'Home') target = 0;
+        if (event.key === 'End') target = tabs.length - 1;
+        if (target !== undefined) {
+          event.preventDefault();
+          tabs[target].focus();
+          select(tabs[target].dataset.category);
+        }
+      });
     });
+    [previous, next].forEach((button, index) => button.addEventListener('click', () => {
+      page += index === 0 ? -1 : 1;
+      render();
+      results.focus({ preventScroll: true });
+      results.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    }));
+    document.querySelectorAll('a[href="products.html#wds1700"]').forEach(link => link.addEventListener('click', event => {
+      event.preventDefault();
+      history.pushState(null, '', '#wds1700');
+      fromHash();
+    }));
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
   }
   const form = document.querySelector('#contact-form');
   if (form) {
