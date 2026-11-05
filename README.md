@@ -23,3 +23,11 @@ The contact form opens a prefilled draft in the visitor's email application. The
 Deploy the repository root as a static site on Vercel. Push the approved changes to the connected GitHub branch. There are no runtime dependencies, API keys or environment variables.
 
 Legacy project URLs redirect to the product catalogue via `vercel.json`. Company profile links open in a new tab.
+
+## November 2026 profile and image review
+
+All 15 product cards cover the product groups in the supplied August 2026 company profile. The profile file in this repository is byte-identical to that reference, and no missing product family was found.
+
+VFC 919, Metacaulk, WDS 1700 and Vision 555 now have transparent, lossless WebP cutouts using the original PDF soft masks and original foreground RGB values. Full-resolution cutouts are retained alongside 480px/960px responsive derivatives. Product stages use one grey background, `#e8e8e8`, with centred, proportional image sizing.
+
+Local asset and fragment checks, image validation, JavaScript syntax checks, and browser checks of the product categories, pagination, WDS details, enquiry prefill and responsive layouts are performed before deployment. The enquiry draft opens separately so the visitor's form entries remain available when no email app opens.

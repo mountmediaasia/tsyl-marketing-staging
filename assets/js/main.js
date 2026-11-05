@@ -126,7 +126,7 @@
       const recipient = data.get('office') === 'tsylmarketingkch@hotmail.com' ? 'tsylmarketingkch@hotmail.com' : 'tsylmarketing@hotmail.com';
       const subject = `Product enquiry — ${data.get('company')}`;
       const body = `Company: ${data.get('company')}\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nPhone: ${data.get('phone')}\n\n${data.get('message')}`;
-      location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(`mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener,noreferrer');
       document.querySelector('#form-status').textContent = 'Your email draft is ready to open. Send it from your email app to complete the enquiry. If no app opens, email our team directly; your entries are still here.';
     });
   }
